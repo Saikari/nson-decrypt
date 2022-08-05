@@ -2,29 +2,30 @@ from zlib import compressobj, decompressobj
 from os import path
 from aiofiles import open
 from asyncio import run
-from re import sub
 
 
 async def decode(orig_path):
     async with open(orig_path, mode='rb') as save_file:
         byte_arr = await save_file.read()
     obj = decompressobj(wbits=-15)
+    data = obj.decompress(byte_arr)
     async with open(f'{path.dirname(orig_path)}/Edit_File.json', mode='wb') as write_file:
-        data = obj.decompress(byte_arr)
         await write_file.write(data)
-    text = sub(r'\\{3}"(.*?)\\{3}', r'"\1', data.decode('UTF-8'))
-    text = sub(r'\\{2}"(.*?)\\{2}"', r'"\1"', text)
-    text = sub(r'\["{', '[{', text)
-    text = sub(r']}"', ']}', text)
-    text = sub(r'"{(.*?)}"', r'{\1}', text)
-    print(sub(r'\\"(.*?)\\"', r'"\1"', text))
-    print(f'{path.dirname(orig_path)}/Edited_Save_File.nson has been written to disk.')
+    print(f'{path.dirname(orig_path)}/Edit_File.json has been written to disk.')
+''' 
+    from re import sub, findall
+    text = data.decode('UTF-8')
+    text = sub(r'\\{1,3}"(.*?)\\{1,3}"', r'"\1"', text)
+    while findall(r'"{(.*?)}"', text):
+        text = sub(r'"{(.*?)}"', r'{\1}', text)
+    async with open(f'{path.dirname(orig_path)}/Read.json', mode='wt') as write_file:
+        await write_file.write(text)'''
 
 
 async def encode(new_path):
     async with open(new_path, mode='rb') as edit_file:
         save_data = await edit_file.read()
-    obj = compressobj(wbits=-15)
+    obj = compressobj(wbits=int(input('enter wbits')))
     async with open(f'{path.dirname(new_path)}/Edited_Save_File.nson', mode='wb') as new_save:
         await new_save.write(obj.compress(save_data))
     print(f'{path.dirname(new_path)}/Edited_Save_File.nson has been written to disk.')
