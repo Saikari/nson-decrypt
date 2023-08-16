@@ -9,9 +9,9 @@ async def decode(orig_path):
         byte_arr = await save_file.read()
     obj = decompressobj(wbits=-15)
     data = obj.decompress(byte_arr)
-    async with open(f'{path.dirname(orig_path)}/Edit_File.json', mode='wb') as write_file:
+    async with open(f'Edit_File.json', mode='wb') as write_file:
         await write_file.write(data)
-    print(f'{path.dirname(orig_path)}/Edit_File.json has been written to disk.')
+    print(f'Edit_File.json has been written to disk.')
 ''' 
     from re import sub, findall
     text = data.decode('UTF-8')
@@ -26,9 +26,9 @@ async def encode(new_path):
     async with open(new_path, mode='rb') as edit_file:
         save_data = await edit_file.read()
     obj = compressobj(wbits=int(input('enter wbits')))
-    async with open(f'{path.dirname(new_path)}/Edited_Save_File.nson', mode='wb') as new_save:
+    async with open(f'Edited_Save_File.nson', mode='wb') as new_save:
         await new_save.write(obj.compress(save_data))
-    print(f'{path.dirname(new_path)}/Edited_Save_File.nson has been written to disk.')
+    print(f'Edited_Save_File.nson has been written to disk.')
 
 
 async def cmdhandler(cmd):
