@@ -12,20 +12,12 @@ async def decode(orig_path):
     async with open(f'Edit_File.json', mode='wb') as write_file:
         await write_file.write(data)
     print(f'Edit_File.json has been written to disk.')
-''' 
-    from re import sub, findall
-    text = data.decode('UTF-8')
-    text = sub(r'\\{1,3}"(.*?)\\{1,3}"', r'"\1"', text)
-    while findall(r'"{(.*?)}"', text):
-        text = sub(r'"{(.*?)}"', r'{\1}', text)
-    async with open(f'{path.dirname(orig_path)}/Read.json', mode='wt') as write_file:
-        await write_file.write(text)'''
 
 
 async def encode(new_path):
     async with open(new_path, mode='rb') as edit_file:
         save_data = await edit_file.read()
-    obj = compressobj(wbits=int(input('enter wbits')))
+    obj = compressobj(wbits=-15)
     async with open(f'Edited_Save_File.nson', mode='wb') as new_save:
         await new_save.write(obj.compress(save_data))
     print(f'Edited_Save_File.nson has been written to disk.')
@@ -53,6 +45,11 @@ async def cmdhandler(cmd):
     except Exception as ex:
         print(f'Exception type - {type(ex)}\tException args - {ex.args}\tException - {ex}')
 
+async def async_read_file(filename, flags):
+    async with aiofiles.open(filename, flags) as f:
+        content = await f.read()
+    return content
+
 
 async def main():
     while True:
@@ -67,3 +64,10 @@ async def main():
 
 
 run(main())
+
+async def test_answer():
+    orig_nson = await async_read_file('GameSave001.nson', 'rb')
+    await decode('GameSave001.nson')
+    await encode('Edit_File.json')
+    new_nson = await async_read_file('Edited_Save_File.nson', 'rb')
+    assert orig_nson == new_nson
