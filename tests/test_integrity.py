@@ -12,11 +12,12 @@ async def async_decode(original_path):
     async with aiofiles.open('Edit_File.json', mode='wb') as write_file:
         await write_file.write(obj.decompress(byte_arr))
         await write_file.flush()  # flush the write buffer to the file
+        os.fsync(write_file.fileno())  # ensure data is written to disk
     print(f'Edit_File.json has been written to disk asynchronously.')
     # Check the content of the file
     with open('Edit_File.json', mode='rb') as edited_file:
         edited_content = edited_file.read()
-    assert edited_content == obj.decompress(byte_arr), 'File content does not match'
+    assert edited_content == zlib.decompress(byte_arr), 'File content does not match'
     # Check if the file exists
     assert os.path.exists('Edit_File.json'), 'File not found'
     # Check if the file is not empty
@@ -30,11 +31,12 @@ def sync_decode(original_path):
     with open('Edit_File.json', mode='wb') as write_file:
         write_file.write(obj.decompress(byte_arr))
         write_file.flush()  # flush the write buffer to the file
+        os.fsync(write_file.fileno())  # ensure data is written to disk
     print(f'Edit_File.json has been written to disk synchronously.')
     # Check the content of the file
     with open('Edit_File.json', mode='rb') as edited_file:
         edited_content = edited_file.read()
-    assert edited_content == obj.decompress(byte_arr), 'File content does not match'
+    assert edited_content == zlib.decompress(byte_arr), 'File content does not match'
     # Check if the file exists
     assert os.path.exists('Edit_File.json'), 'File not found'
     # Check if the file is not empty
@@ -48,6 +50,7 @@ async def async_encode(new_path):
     async with aiofiles.open('Edited_Save_File.nson', mode='wb') as new_save:
         await new_save.write(obj.compress(save_data))
         await new_save.flush()  # flush the write buffer to the file
+        os.fsync(new_save.fileno())  # ensure data is written to disk
     print(f'Edited_Save_File.nson has been written to disk asynchronously.')
     # Check the content of the file
     with open('Edited_Save_File.nson', mode='rb') as edited_file:
@@ -66,6 +69,7 @@ def sync_encode(new_path):
     with open('Edited_Save_File.nson', mode='wb') as new_save:
         new_save.write(obj.compress(save_data))
         new_save.flush()  # flush the write buffer to the file
+        os.fsync(new_save.fileno())  # ensure data is written to disk
         new_save.close()
     print(f'Edited_Save_File.nson has been written to disk synchronously.')
     # Check if the file exists
@@ -76,7 +80,6 @@ def sync_encode(new_path):
     with open('Edited_Save_File.nson', mode='rb') as edited_file:
         edited_content = edited_file.read()
     assert edited_content == zlib.decompress(obj.compress(save_data)), 'File content does not match'
-
     # Check if the file path is valid
     assert os.path.isfile(new_path), 'Invalid file path'
     # Check if the file is not empty
