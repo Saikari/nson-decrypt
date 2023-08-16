@@ -67,8 +67,9 @@ def sync_read_file(filename, flags):
 
 
 def test_integrity():
-    orig_nson = sync_read_file('GameSave001.nson', 'rb')
+    print(sync_read_file('GameSave001.nson','rb'))
     sync_decode('GameSave001.nson')
+    print(sync_read_file('Edit_File.json','r'))
     sync_encode('Edit_File.json')
-    new_nson = sync_read_file('Edited_Save_File.nson', 'rb')
-    assert orig_nson == new_nson
+    print(sync_read_file('Edited_Save_File.nson','rb'))
+    assert sync_read_file('GameSave001.nson', 'rb') == sync_read_file('Edited_Save_File.nson', 'rb')
