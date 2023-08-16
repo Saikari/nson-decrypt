@@ -2,7 +2,7 @@ from zlib import compressobj, decompressobj
 from os import path
 from aiofiles import open
 from asyncio import run
-
+import pytest
 
 async def decode(orig_path):
     async with open(orig_path, mode='rb') as save_file:
@@ -51,7 +51,7 @@ async def async_read_file(filename, flags):
     return content
 
 @pytest.mark.asyncio
-async def test_answer():
+async def test_integrity():
     orig_nson = await async_read_file('GameSave001.nson', 'rb')
     await decode('GameSave001.nson')
     await encode('Edit_File.json')
