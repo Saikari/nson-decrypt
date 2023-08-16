@@ -12,6 +12,14 @@ async def async_decode(original_path):
     async with aiofiles.open('Edit_File.json', mode='wb') as write_file:
         await write_file.write(obj.decompress(byte_arr))
     print(f'Edit_File.json has been written to disk asynchronously.')
+    # Check the content of the file
+    with open('Edit_File.json', mode='rb') as edited_file:
+        edited_content = edited_file.read()
+    assert edited_content == obj.compress(byte_arr), 'File content does not match'
+    # Check if the file exists
+    assert os.path.exists('Edit_File.json'), 'File not found'
+    # Check if the file is not empty
+    assert os.path.getsize('Edit_File.json') > 0, 'File is empty'
 
 
 def sync_decode(original_path):
@@ -21,6 +29,14 @@ def sync_decode(original_path):
     with open('Edit_File.json', mode='wb') as write_file:
         write_file.write(obj.decompress(byte_arr))
     print(f'Edit_File.json has been written to disk synchronously.')
+    # Check the content of the file
+    with open('Edit_File.json', mode='rb') as edited_file:
+        edited_content = edited_file.read()
+    assert edited_content == obj.compress(byte_arr), 'File content does not match'
+    # Check if the file exists
+    assert os.path.exists('Edit_File.json'), 'File not found'
+    # Check if the file is not empty
+    assert os.path.getsize('Edit_File.json') > 0, 'File is empty'
 
 
 async def async_encode(new_path):
@@ -30,6 +46,14 @@ async def async_encode(new_path):
     async with aiofiles.open('Edited_Save_File.nson', mode='wb') as new_save:
         await new_save.write(obj.compress(save_data))
     print(f'Edited_Save_File.nson has been written to disk asynchronously.')
+    # Check the content of the file
+    with open('Edited_Save_File.nson', mode='rb') as edited_file:
+        edited_content = edited_file.read()
+    assert edited_content == obj.compress(save_data), 'File content does not match'
+    # Check if the file exists
+    assert os.path.exists('Edited_Save_File.nson'), 'File not found'
+    # Check if the file is not empty
+    assert os.path.getsize('Edited_Save_File.nson') > 0, 'File is empty'
 
 
 def sync_encode(new_path):
@@ -41,13 +65,10 @@ def sync_encode(new_path):
         new_save.flush()
         new_save.close()
     print(f'Edited_Save_File.nson has been written to disk synchronously.')
-
     # Check if the file exists
     assert os.path.exists('Edited_Save_File.nson'), 'File not found'
-
     # Check if the file is not empty
     assert os.path.getsize('Edited_Save_File.nson') > 0, 'File is empty'
-
     # Check the content of the file
     with open('Edited_Save_File.nson', mode='rb') as edited_file:
         edited_content = edited_file.read()
@@ -112,11 +133,11 @@ def test_integrity(original_file_path, edited_file_path, edited_json_path):
     sync_decode(original_file_path)
     with open(edited_json_path, 'r') as edited_json_file:
         edited_json_content = edited_json_file.read()
-        edited_json_file.flush()  # Add flush here
+        edited_json_file.flush()
     sync_encode(edited_json_path)
     with open(edited_file_path, 'rb') as edited_file:
         edited_content = edited_file.read()
-        edited_file.flush()  # Add flush here
+        edited_file.flush()
     assert edited_content == zlib.compress(original_content, wbits=-15), 'Edited content does not match original content'
     assert pathlib.Path(edited_json_path).exists(), 'Edited JSON file does not exist'
     assert pathlib.Path(edited_file_path).exists(), 'Edited file does not exist'
