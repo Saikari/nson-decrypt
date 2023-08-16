@@ -50,7 +50,7 @@ async def async_read_file(filename, flags):
         content = await f.read()
     return content
 
-
+@pytest.mark.asyncio
 async def test_answer():
     orig_nson = await async_read_file('GameSave001.nson', 'rb')
     await decode('GameSave001.nson')
