@@ -38,9 +38,11 @@ def sync_encode(new_path):
     obj = zlib.compressobj(wbits=-15)
     with open('Edited_Save_File.nson', mode='wb') as new_save:
         new_save.write(obj.compress(save_data))
+        new_save.flush()
         assert new_save.tell() > 0, 'Compressed data not written to file'
+        new_save.close()
     print(f'Edited_Save_File.nson has been written to disk synchronously.')
-    new_save.close()
+
 
 
 async def cmdhandler(cmd):
@@ -119,3 +121,6 @@ def test_integrity(original_file_path, edited_file_path, edited_json_path):
     assert hashlib.sha256(original_content).hexdigest() == hashlib.sha256(sync_read_file(edited_json_path, 'rb')).hexdigest(), 'Edited JSON file is corrupted'
     assert hashlib.sha256(original_content).hexdigest() == hashlib.sha256(edited_content).hexdigest(), 'Edited file is corrupted'
     assert 'assert' not in sync_read_file(__file__, 'r'), 'Code contains assert statements that should not be used in production environments'
+
+
+
