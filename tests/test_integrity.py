@@ -9,7 +9,7 @@ async def decode(orig_path):
         byte_arr = await save_file.read()
     obj = decompressobj(wbits=-15)
     data = obj.decompress(byte_arr)
-    async with open(f'Edit_File.json', mode='wb') as write_file:
+    async with open_async(f'Edit_File.json', mode='wb') as write_file:
         await write_file.write(data)
     print(f'Edit_File.json has been written to disk.')
 
