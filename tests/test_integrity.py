@@ -3,7 +3,7 @@ import pathlib
 import aiofiles
 import hashlib
 import pytest
-
+import os
 
 async def async_decode(original_path):
     async with aiofiles.open(original_path, mode='rb') as original_file:
@@ -39,9 +39,19 @@ def sync_encode(new_path):
     with open('Edited_Save_File.nson', mode='wb') as new_save:
         new_save.write(obj.compress(save_data))
         new_save.flush()
-        assert new_save.tell() > 0, 'Compressed data not written to file'
         new_save.close()
     print(f'Edited_Save_File.nson has been written to disk synchronously.')
+
+    # Check if the file exists
+    assert os.path.exists('Edited_Save_File.nson'), 'File not found'
+
+    # Check if the file is not empty
+    assert os.path.getsize('Edited_Save_File.nson') > 0, 'File is empty'
+
+    # Check the content of the file
+    with open('Edited_Save_File.nson', mode='rb') as edited_file:
+        edited_content = edited_file.read()
+    assert edited_content == obj.compress(save_data), 'File content does not match'
 
 
 
