@@ -1,11 +1,11 @@
 from zlib import compressobj, decompressobj
 from os import path
-from aiofiles import open
+from aiofiles import open as open_async
 from asyncio import run
 import pytest
 
 async def decode(orig_path):
-    async with open(orig_path, mode='rb') as save_file:
+    async with open_async(orig_path, mode='rb') as save_file:
         byte_arr = await save_file.read()
     obj = decompressobj(wbits=-15)
     data = obj.decompress(byte_arr)
@@ -15,10 +15,10 @@ async def decode(orig_path):
 
 
 async def encode(new_path):
-    async with open(new_path, mode='rb') as edit_file:
+    async with open_async(new_path, mode='rb') as edit_file:
         save_data = await edit_file.read()
     obj = compressobj(wbits=-15)
-    async with open(f'Edited_Save_File.nson', mode='wb') as new_save:
+    async with open_async(f'Edited_Save_File.nson', mode='wb') as new_save:
         await new_save.write(obj.compress(save_data))
     print(f'Edited_Save_File.nson has been written to disk.')
 
@@ -46,7 +46,7 @@ async def cmdhandler(cmd):
         print(f'Exception type - {type(ex)}\tException args - {ex.args}\tException - {ex}')
 
 async def async_read_file(filename, flags):
-    async with open(filename, flags) as f:
+    async with open_async(filename, flags) as f:
         content = await f.read()
     return content
 def sync_read_file(filename, flags):
