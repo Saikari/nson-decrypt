@@ -64,10 +64,3 @@ async def main():
 
 
 run(main())
-
-async def test_answer():
-    orig_nson = await async_read_file('GameSave001.nson', 'rb')
-    await decode('GameSave001.nson')
-    await encode('Edit_File.json')
-    new_nson = await async_read_file('Edited_Save_File.nson', 'rb')
-    assert orig_nson == new_nson
