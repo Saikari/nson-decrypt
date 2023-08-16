@@ -5,7 +5,7 @@ from asyncio import run
 import pytest
 
 def async_decode(orig_path):
-    byte_arr = await async_read_file(orig_path, 'rb')
+    byte_arr = sync_read_file(orig_path, 'rb')
     obj = decompressobj(wbits=-15)
     async with open_async('Edit_File.json', mode='wb') as write_file:
         await write_file.write(obj.decompress(byte_arr))
