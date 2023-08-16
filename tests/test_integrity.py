@@ -112,9 +112,11 @@ def test_integrity(original_file_path, edited_file_path, edited_json_path):
     sync_decode(original_file_path)
     with open(edited_json_path, 'r') as edited_json_file:
         edited_json_content = edited_json_file.read()
+        edited_json_file.flush()  # Add flush here
     sync_encode(edited_json_path)
     with open(edited_file_path, 'rb') as edited_file:
         edited_content = edited_file.read()
+        edited_file.flush()  # Add flush here
     assert edited_content == zlib.compress(original_content, wbits=-15), 'Edited content does not match original content'
     assert pathlib.Path(edited_json_path).exists(), 'Edited JSON file does not exist'
     assert pathlib.Path(edited_file_path).exists(), 'Edited file does not exist'
@@ -131,6 +133,7 @@ def test_integrity(original_file_path, edited_file_path, edited_json_path):
     assert hashlib.sha256(original_content).hexdigest() == hashlib.sha256(sync_read_file(edited_json_path, 'rb')).hexdigest(), 'Edited JSON file is corrupted'
     assert hashlib.sha256(original_content).hexdigest() == hashlib.sha256(edited_content).hexdigest(), 'Edited file is corrupted'
     assert 'assert' not in sync_read_file(__file__, 'r'), 'Code contains assert statements that should not be used in production environments'
+
 
 
 
