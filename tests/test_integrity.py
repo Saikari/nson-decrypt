@@ -36,12 +36,11 @@ def sync_decode(original_path):
     # Check the content of the file
     with open('Edit_File.json', mode='rb') as edited_file:
         edited_content = edited_file.read()
-    assert edited_content == zlib.decompress(obj.compress(byte_arr)), 'File content does not match'
+    assert edited_content == zlib.decompress(byte_arr), 'File content does not match'
     # Check if the file exists
     assert os.path.exists('Edit_File.json'), 'File not found'
     # Check if the file is not empty
     assert os.path.getsize('Edit_File.json') > 0, 'File is empty'
-
 
 
 async def async_encode(new_path):
@@ -56,7 +55,7 @@ async def async_encode(new_path):
     # Check the content of the file
     with open('Edited_Save_File.nson', mode='rb') as edited_file:
         edited_content = edited_file.read()
-    assert edited_content == zlib.decompress(obj.compress(save_data)), 'File content does not match'
+    assert edited_content == zlib.compress(save_data), 'File content does not match'
     # Check if the file exists
     assert os.path.exists('Edited_Save_File.nson'), 'File not found'
     # Check if the file is not empty
@@ -68,7 +67,7 @@ def sync_encode(new_path):
         save_data = new_file.read()
     obj = zlib.compressobj(wbits=-15)
     with open('Edited_Save_File.nson', mode='wb') as new_save:
-        new_save.write(obj.compress(save_data))
+        new_save.write(zlib.compress(save_data))
         new_save.flush()  # flush the write buffer to the file
         os.fsync(new_save.fileno())  # ensure data is written to disk
         new_save.close()
@@ -80,11 +79,12 @@ def sync_encode(new_path):
     # Check the content of the file
     with open('Edited_Save_File.nson', mode='rb') as edited_file:
         edited_content = edited_file.read()
-    assert edited_content == zlib.decompress(obj.compress(save_data)), 'File content does not match'
+    assert edited_content == zlib.compress(save_data), 'File content does not match'
     # Check if the file path is valid
     assert os.path.isfile(new_path), 'Invalid file path'
     # Check if the file is not empty
     assert os.path.getsize(new_path) > 0, 'File is empty'
+
 
 
 
