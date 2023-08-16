@@ -46,7 +46,7 @@ async def cmdhandler(cmd):
         print(f'Exception type - {type(ex)}\tException args - {ex.args}\tException - {ex}')
 
 async def async_read_file(filename, flags):
-    async with aiofiles.open(filename, flags) as f:
+    async with open(filename, flags) as f:
         content = await f.read()
     return content
 
