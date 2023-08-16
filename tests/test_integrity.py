@@ -4,32 +4,43 @@ from aiofiles import open as open_async
 from asyncio import run
 import pytest
 
-async def decode(orig_path):
-    async with open_async(orig_path, mode='rb') as save_file:
-        byte_arr = await save_file.read()
+async def async_decode(orig_path):
+    byte_arr = await async_read_file(orig_path, 'rb')
     obj = decompressobj(wbits=-15)
-    data = obj.decompress(byte_arr)
-    async with open_async(f'Edit_File.json', mode='wb') as write_file:
-        await write_file.write(data)
-    print(f'Edit_File.json has been written to disk.')
+    async with open_async('Edit_File.json', mode='wb') as write_file:
+        await write_file.write(obj.decompress(byte_arr))
+    print(f'Edit_File.json has been written to disk asynchronously.')
 
 
-async def encode(new_path):
-    async with open_async(new_path, mode='rb') as edit_file:
-        save_data = await edit_file.read()
+async def sync_decode(orig_path):
+    byte_arr = sync_read_file(orig_path, 'rb')
+    obj = decompressobj(wbits=-15)
+    with open('Edit_File.json', mode='wb') as write_file:
+        write_file.write(obj.decompress(byte_arr))
+    print(f'Edit_File.json has been written to disk synchronously.')
+
+async def async_encode(new_path):
+    save_data = await async_read_file(new_path, 'rb')
     obj = compressobj(wbits=-15)
-    async with open_async(f'Edited_Save_File.nson', mode='wb') as new_save:
+    async with open_async('Edited_Save_File.nson', mode='wb') as new_save:
         await new_save.write(obj.compress(save_data))
-    print(f'Edited_Save_File.nson has been written to disk.')
+    print(f'Edited_Save_File.nson has been written to disk asynchronously.')
+
+async def sync_encode(new_path):
+    save_data = sync_read_file(new_path, 'rb')
+    obj = compressobj(wbits=-15)
+    with open('Edited_Save_File.nson', mode='wb') as new_save:
+        new_save.write(obj.compress(save_data))
+    print(f'Edited_Save_File.nson has been written to disk synchronously.')
 
 
 async def cmdhandler(cmd):
     orig_path = input(f'Please enter {".nson" if cmd =="-decode" else ".json"} file path.')
     try:
         if orig_path.split('.')[-1] == 'nson':
-            await decode(orig_path)
+            await async_decode(orig_path)
         elif orig_path.split('.')[-1] == 'json':
-            await encode(orig_path)
+            await sync_encode(orig_path)
         else:
             raise Warning
     except FileExistsError:
@@ -54,10 +65,10 @@ def sync_read_file(filename, flags):
         content = f.read()
     return content
 
-@pytest.mark.asyncio
-async def test_integrity():
+
+def test_integrity():
     orig_nson = sync_read_file('GameSave001.nson', 'rb')
-    await decode('GameSave001.nson')
-    await encode('Edit_File.json')
+    sync_decode('GameSave001.nson')
+    sync_encode('Edit_File.json')
     new_nson = sync_read_file('Edited_Save_File.nson', 'rb')
     assert orig_nson == new_nson
