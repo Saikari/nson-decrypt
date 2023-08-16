@@ -15,7 +15,7 @@ async def async_decode(original_path):
     # Check the content of the file
     with open('Edit_File.json', mode='rb') as edited_file:
         edited_content = edited_file.read()
-    assert edited_content == obj.compress(byte_arr), 'File content does not match'
+    assert edited_content == obj.decompress(byte_arr), 'File content does not match'
     # Check if the file exists
     assert os.path.exists('Edit_File.json'), 'File not found'
     # Check if the file is not empty
@@ -32,7 +32,7 @@ def sync_decode(original_path):
     # Check the content of the file
     with open('Edit_File.json', mode='rb') as edited_file:
         edited_content = edited_file.read()
-    assert edited_content == obj.compress(byte_arr), 'File content does not match'
+    assert edited_content == obj.decompress(byte_arr), 'File content does not match'
     # Check if the file exists
     assert os.path.exists('Edit_File.json'), 'File not found'
     # Check if the file is not empty
@@ -49,7 +49,7 @@ async def async_encode(new_path):
     # Check the content of the file
     with open('Edited_Save_File.nson', mode='rb') as edited_file:
         edited_content = edited_file.read()
-    assert edited_content == obj.compress(save_data), 'File content does not match'
+    assert edited_content == zlib.decompress(obj.compress(save_data)), 'File content does not match'
     # Check if the file exists
     assert os.path.exists('Edited_Save_File.nson'), 'File not found'
     # Check if the file is not empty
@@ -72,7 +72,7 @@ def sync_encode(new_path):
     # Check the content of the file
     with open('Edited_Save_File.nson', mode='rb') as edited_file:
         edited_content = edited_file.read()
-    assert edited_content == obj.compress(save_data), 'File content does not match'
+    assert edited_content == zlib.decompress(obj.compress(save_data)), 'File content does not match'
 
 
 
