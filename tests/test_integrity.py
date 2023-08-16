@@ -56,8 +56,8 @@ def sync_read_file(filename, flags):
 
 @pytest.mark.asyncio
 async def test_integrity():
-    orig_nson = await sync_read_file('GameSave001.nson', 'rb')
+    orig_nson = sync_read_file('GameSave001.nson', 'rb')
     await decode('GameSave001.nson')
     await encode('Edit_File.json')
-    new_nson = await sync_read_file('Edited_Save_File.nson', 'rb')
+    new_nson = sync_read_file('Edited_Save_File.nson', 'rb')
     assert orig_nson == new_nson
