@@ -94,11 +94,14 @@ def edited_json_path():
 
 
 def test_integrity(original_file_path, edited_file_path, edited_json_path):
-    original_content = sync_read_file(original_file_path, 'rb')
+    with open(original_file_path, 'rb') as original_file:
+        original_content = original_file.read()
     sync_decode(original_file_path)
-    edited_json_content = sync_read_file(edited_json_path, 'r')
+    with open(edited_json_path, 'r') as edited_json_file:
+        edited_json_content = edited_json_file.read()
     sync_encode(edited_json_path)
-    edited_content = sync_read_file(edited_file_path, 'rb')
+    with open(edited_file_path, 'rb') as edited_file:
+        edited_content = edited_file.read()
     assert edited_content == zlib.compress(original_content, wbits=-15), 'Edited content does not match original content'
     assert pathlib.Path(edited_json_path).exists(), 'Edited JSON file does not exist'
     assert pathlib.Path(edited_file_path).exists(), 'Edited file does not exist'
@@ -114,3 +117,4 @@ def test_integrity(original_file_path, edited_file_path, edited_json_path):
     assert len(sync_read_file(edited_file_path, 'rb')) > 0, 'Edited file is empty'
     assert hashlib.sha256(original_content).hexdigest() == hashlib.sha256(sync_read_file(edited_json_path, 'rb')).hexdigest(), 'Edited JSON file is corrupted'
     assert hashlib.sha256(original_content).hexdigest() == hashlib.sha256(edited_content).hexdigest(), 'Edited file is corrupted'
+
