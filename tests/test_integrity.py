@@ -40,7 +40,7 @@ async def cmdhandler(cmd):
         if orig_path.split('.')[-1] == 'nson':
             await async_decode(orig_path)
         elif orig_path.split('.')[-1] == 'json':
-            await sync_encode(orig_path)
+            await async_encode(orig_path)
         else:
             raise Warning
     except FileExistsError:
