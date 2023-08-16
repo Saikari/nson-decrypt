@@ -4,8 +4,8 @@ from aiofiles import open as open_async
 from asyncio import run
 import pytest
 
-def async_decode(orig_path):
-    byte_arr = sync_read_file(orig_path, 'rb')
+async def async_decode(orig_path):
+    byte_arr = await async_read_file(orig_path, 'rb')
     obj = decompressobj(wbits=-15)
     async with open_async('Edit_File.json', mode='wb') as write_file:
         await write_file.write(obj.decompress(byte_arr))
@@ -26,7 +26,7 @@ async def async_encode(new_path):
         await new_save.write(obj.compress(save_data))
     print(f'Edited_Save_File.nson has been written to disk asynchronously.')
 
-async def sync_encode(new_path):
+def sync_encode(new_path):
     save_data = sync_read_file(new_path, 'rb')
     obj = compressobj(wbits=-15)
     with open('Edited_Save_File.nson', mode='wb') as new_save:
