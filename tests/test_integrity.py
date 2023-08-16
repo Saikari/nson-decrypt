@@ -49,11 +49,15 @@ async def async_read_file(filename, flags):
     async with open(filename, flags) as f:
         content = await f.read()
     return content
+def sync_read_file(filename, flags):
+    with open('file.txt', 'r') as f:
+        content = f.read()
+    return content
 
 @pytest.mark.asyncio
 async def test_integrity():
-    orig_nson = await async_read_file('GameSave001.nson', 'rb')
+    orig_nson = await sync_read_file('GameSave001.nson', 'rb')
     await decode('GameSave001.nson')
     await encode('Edit_File.json')
-    new_nson = await async_read_file('Edited_Save_File.nson', 'rb')
+    new_nson = await sync_read_file('Edited_Save_File.nson', 'rb')
     assert orig_nson == new_nson
