@@ -50,7 +50,7 @@ async def async_read_file(filename, flags):
         content = await f.read()
     return content
 def sync_read_file(filename, flags):
-    with open(filename, 'r') as f:
+    with open(filename, flags) as f:
         content = f.read()
     return content
 
